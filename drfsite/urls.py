@@ -15,7 +15,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from blog.views import PostsListAPIView, AuthorListAPIView, AuthorDetailAPIView, CommentsAPIDetailView,\
+    LikePostAPIDetailView, LikeCommentsAPIDetailView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path('api/v1/postslist', PostsListAPIView.as_view()),
+    path('api/v1/postslist/<int:pk>/', PostsListAPIView.as_view()),
+    path('api/v1/postslist/update/<int:pk>/', PostsListAPIView.as_view()),
+    path('api/v1/postslist/detail/<int:pk>/', PostsListAPIView.as_view()),
+    path('api/v1/author/detail/<int:pk>/', AuthorDetailAPIView.as_view()),
+    path('api/v1/author', AuthorListAPIView.as_view()),
+    path('api/v1/comments/detail/<int:pk>/', CommentsAPIDetailView.as_view()),
+    path('api/v1/likepost/detail/<int:pk>/', LikePostAPIDetailView.as_view()),
+    path('api/v1/likecomments/detail/<int:pk>/',LikeCommentsAPIDetailView.as_view()),
+
+
 ]
