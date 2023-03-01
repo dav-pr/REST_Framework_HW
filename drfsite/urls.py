@@ -20,15 +20,14 @@ from blog.views import PostsListAPIView, AuthorListAPIView, AuthorDetailAPIView,
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('api/v1/postslist', PostsListAPIView.as_view()),
+    path('api/v1/postslist', PostsListAPIView.as_view(),  name ='posts_list' ),
     path('api/v1/postslist/<int:pk>/', PostsListAPIView.as_view()),
-    path('api/v1/postslist/update/<int:pk>/', PostsListAPIView.as_view()),
-    path('api/v1/postslist/detail/<int:pk>/', PostsListAPIView.as_view()),
-    path('api/v1/author/detail/<int:pk>/', AuthorDetailAPIView.as_view()),
-    path('api/v1/author', AuthorListAPIView.as_view()),
-    path('api/v1/comments/detail/<int:pk>/', CommentsAPIDetailView.as_view()),
-    path('api/v1/likepost/detail/<int:pk>/', LikePostAPIDetailView.as_view()),
-    path('api/v1/likecomments/detail/<int:pk>/',LikeCommentsAPIDetailView.as_view()),
-
-
+    path('api/v1/postslist/update/<int:pk>/', PostsListAPIView.as_view(),  name ='posts_update'),
+    path('api/v1/postslist/detail/<int:pk>/', PostsListAPIView.as_view(),  name ='posts_detail'),
+    path('api/v1/author/detail/<int:pk>/', AuthorDetailAPIView.as_view(),  name ='author_detail'),
+    path('api/v1/author', AuthorListAPIView.as_view(),  name ='author_list'),
+    path('api/v1/comments/detail/<int:pk>/', CommentsAPIDetailView.as_view(),  name ='comments_detail'),
+    path('api/v1/likepost/detail/<int:pk>/', LikePostAPIDetailView.as_view(),  name ='likepost_detail'),
+    path('api/v1/likecomments/detail/<int:pk>/',LikeCommentsAPIDetailView.as_view(),  name ='likecomments_detail'),
+    url(r'^auth/', include('djoser.urls')),
 ]
