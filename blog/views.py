@@ -1,63 +1,37 @@
 from django.shortcuts import render
 from rest_framework import generics
+from django.shortcuts import get_object_or_404
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .serializers import *
+from .permission import isAuthor
+from .models import Author
+from rest_framework import permissions
 
-
-# Create your views here.
-
-# Для розуміння, як це працює під капотом
-# class PostsAPIview(generics.ListAPIView)
-#     queryset = Posts.objects.all()
-#     serializer_class = PostsSerializer
-
-
-# class PostsAPIView(APIView):
-#     def get(self, request):
-#         w = Posts.objects.all()
-#         return Response({'posts': PostsSerializer(w, many=True).data})
-#
-#     def post(self, request):
-#         serializer = PostsSerializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#
-#         return Response({'post': serializer.data})
-#
-#     def put(self, request, *args, **kwargs):
-#         pk = kwargs.get("pk", None)
-#         if not pk:
-#             return Response({"error": "Method PUT not allowed"})
-#
-#         try:
-#             instance = Posts.objects.get(pk=pk)
-#         except:
-#             return Response({"error": "Object does not exists"})
-#
-#         serializer = PostsSerializer(data=request.data, instance=instance)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#         return Response({"post": serializer.data})
-#
-#     def delete(self, request, *args, **kwargs):
-#         pk = kwargs.get("pk", None)
-#         if not pk:
-#             return Response({"error": "Method DELETE not allowed"})
-#
-#         # здесь код для удаления записи с переданным pk
-#
-#         return Response({"post": "delete post " + str(pk)})
 
 class PostsListAPIView(generics.ListCreateAPIView):
     queryset = Posts.objects.all()
     serializer_class = PostsSerializer
 
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return (isAuthor(),)
+        return super().get_permissions()
+
+    def perform_create(self, serializer):
+        """ Метод створює новий пост. При цьому, здійснюється перевірка чи існує автор, який відповідає зареєстрованому
+        автору. Якщо відповідний автор існує, то створюється пост. У протелижному випадку повертається помилка 404.
+        """
+        author_ints = get_object_or_404(Author, name = self.request.user)
+        serializer.save(author = author_ints)
+
 
 class AuthorListAPIView(generics.ListCreateAPIView):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
+    permission_classes = [permissions.IsAdminUser]
 
 
 class AuthorDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -68,6 +42,12 @@ class AuthorDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 class PostsAPIUpdate(generics.UpdateAPIView):
     queryset = Posts.objects.all()
     serializer_class = PostsSerializer
+    permission_classes = [isAuthor]
+
+class PostsAPIDestroy(generics.DestroyAPIView):
+    queryset = Posts.objects.all()
+    serializer_class = PostsSerializer
+    permission_classes = [isAuthor]
 
 
 class PostsAPIDetailView(generics.RetrieveUpdateDestroyAPIView):

@@ -1,5 +1,10 @@
 from rest_framework import serializers
+
 from .models import Author, Comments, Posts, LikePost, LikeComments
+
+
+
+
 
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -8,6 +13,7 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 
 class PostsSerializer(serializers.ModelSerializer):
+    # user = serializers.HiddenField(default = serializers.CurrentUserDefault())
     class Meta:
         model = Posts
         fields ='__all__'
